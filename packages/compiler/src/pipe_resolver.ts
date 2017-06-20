@@ -11,6 +11,7 @@ import {Pipe, Type, resolveForwardRef, ɵstringify as stringify} from '@angular/
 import {CompileReflector} from './compile_reflector';
 import {findLast} from './directive_resolver';
 import {CompilerInjectable} from './injectable';
+import {JitReflector} from './jit/jit_reflector';
 
 function _isPipeMetadata(type: any): boolean {
   return type instanceof Pipe;
@@ -25,7 +26,11 @@ function _isPipeMetadata(type: any): boolean {
  */
 @CompilerInjectable()
 export class PipeResolver {
-  constructor(private _reflector: CompileReflector) {}
+  constructor(private _reflector?: CompileReflector) {
+    if (!_reflector) {
+      this._reflector = new JitReflector();
+    }
+  }
 
   isPipe(type: Type<any>) {
     const typeMetadata = this._reflector.annotations(resolveForwardRef(type));
